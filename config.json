@@ -1,0 +1,22 @@
+{
+    "discord": {
+        "prefix": "!",
+        "admins": ["tago#2830", "Saran#2411"],
+        "superusers": ["tago#2830"],
+        "color_1": "#0099ff",
+        "channels": ["general"]
+    },
+    "scoreboard": {
+        "color": "#0099ff",
+        "limit": 30,
+        "rankLimit": 100,
+        "channelId": "612532804844126238",
+        "soloTitle": "Risk Solo League",
+        "teamTitle": "Risk Team League",
+        "ffaTitle": "Risk FFA League"
+        
+    }, 
+    "games": {
+        "limit": 30
+    }
+}
