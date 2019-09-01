@@ -10,7 +10,7 @@ module.exports = class PlayersCommand {
     constructor() {
         this.name = 'players',
         this.alias = ['p'],
-        this.usage = '!players (user name)'
+        this.usage = 'Queries for matching player names.'
     }
 
     run(client, msg, args) {

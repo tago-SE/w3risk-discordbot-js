@@ -9,7 +9,7 @@ module.exports = class StatsCommand {
     constructor() {
         this.name = 'stats',
         this.alias = ['st'],
-        this.usage = '!stats [user name]'
+        this.usage = 'Shows player risk stats.'
     }
 
     static ratio(n, m) {

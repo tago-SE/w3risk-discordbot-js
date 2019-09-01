@@ -9,7 +9,7 @@ module.exports = class GamesCommand {
     constructor() {
         this.name = 'games',
         this.alias = ['g'],
-        this.usage = '!games [user name]'
+        this.usage = 'Display users last played games.'
     }
 
     run(client, msg, args) {

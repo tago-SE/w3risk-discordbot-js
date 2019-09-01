@@ -12,6 +12,7 @@ module.exports = class AdminCommand {
         this.alias = ['a'],
         this.usage = '!admin [discord user]'
         this.disc = "Grants or removes admin rights from a discord user.";
+        this.adminCommand = true;
     }
 
     run(client, msg, args) {

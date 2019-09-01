@@ -14,7 +14,7 @@ module.exports = class SubmitCommand {
     {
         this.name = 'submit',
         this.alias = ['s'],
-        this.usage = '!submit [game id]'
+        this.usage = 'Submits a replay id from wc3stats.com'
     }
 
     static formatResultTitle(replay) 

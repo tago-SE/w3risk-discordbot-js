@@ -7,7 +7,7 @@ module.exports = class AdminsCommand {
     constructor() {
         this.name = 'admins',
         this.alias = ['ad'],
-        this.usage = '!admins'
+        this.usage = 'List all bot admins.'
         this.disc = "List all bot administrators.";
     }
 

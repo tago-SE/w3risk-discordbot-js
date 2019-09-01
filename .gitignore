@@ -1,2 +1,6 @@
 # Contains auth token for discord bot and access to database
 .secret.json
+
+# Docker
+.dockerignore
+Dockerfile

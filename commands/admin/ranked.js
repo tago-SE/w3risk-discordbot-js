@@ -15,6 +15,7 @@ module.exports = class AdminCommand {
         this.alias = ['v'],
         this.usage = '!ranked [game id] [flag]'
         this.disc = "Marks a played game as either ranked or unraked."
+        this.adminCommand = true;
     }
 
     run(client, msg, args) {
