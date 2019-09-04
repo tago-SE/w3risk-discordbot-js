@@ -52,8 +52,11 @@ module.exports = class SubmitCommand {
         var kdStr = "";
         for (var i = 0; i < replay.players.length; i++) 
         {
-            if (replay.gameType === "team") playerStr += "(" + replay.players[i].team + ") " + replay.players[i].name + "\n";  
-            else playerStr += replay.players[i].name + "\n";  
+            if (replay.gameType === "team" && replay.players[i].team != -1) {
+                 playerStr += "(" + replay.players[i].team + ") " + replay.players[i].name + "\n";  
+            } 
+            else 
+                playerStr += replay.players[i].name + "\n";  
             resultStr += replay.players[i].result + "\n";
             kdStr += replay.players[i].kills + "/" + replay.players[i].deaths + "\n";
         }
@@ -127,7 +130,7 @@ module.exports = class SubmitCommand {
                     player.gold = varObj.gold;
                     player.team = varObj.team;
                     // Add none observing players to the list
-                    if (player.result !== "obs")  
+                    if (player.result != null && player.result !== "obs")  
                         replay.players.push(player);
                 }
                 // Detects game type depending on team arrangement and sorts players accordingly 
@@ -138,6 +141,10 @@ module.exports = class SubmitCommand {
                 //   
                 var MongoClient = require('mongodb').MongoClient;
                 var url = "mongodb://" + secret.db.host + ":" + secret.db.port + "/" + secret.db.name;
+
+
+
+                // Needs to be updated to use /db/. files
                 MongoClient.connect(url, {useNewUrlParser: true }, function(err, db) 
                 {
                     if (err) 
@@ -162,10 +169,15 @@ module.exports = class SubmitCommand {
                                     SubmitCommand.displayResult(msg, replay);
                                     if (replay.rankedMatch) 
                                     {
+                                        var start = Date.now();
                                         (async () => {
+                                            var start = new Date();
+                                            console.log("increasing user stats..." + (new Date() - start));
                                             await Users.increaseStats(replay, 1);
-                                            Scoreboard.updateScoreboard(client, replay);
-                                            msg.channel.send("Stats have been updated.");
+                                            console.log("increasing user stats done..." + (new Date() - start));
+                                            console.log("Updating scoreboard..." + (new Date() - start));
+                                            Scoreboard.updateScoreboard(client, replay),
+                                            console.log("Updating scoreboard done..." + (new Date() - start));
                                         })();
                                     }
                                 }

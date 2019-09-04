@@ -31,16 +31,20 @@ client.on('guildCreate', guild => {
     console.log(`New guild joined: ${guild.name} (id: ${guild.id}). This guild has ${guild.memberCount} members!`);
     client.user.setActivity(`Serving ${client.guilds.size} servers`);
 });
+
+client.on('guildMemberAdd', member => {
+    member.send("Welcome to the Risk Server! :)\n" +
+    "If you wish to participate in the Risk-League you should checkout <#" + config.submissions.channelId + ">, " + 
+    "where you can submit replays of your victores to climb the risk-ladder.");
+});
   
 client.on('message', msg => {
-    
-
 
     // Ignore messages sent by bots
     if (msg.author.bot)  return;
     // Ignore messages posted in wrong channels
-    if (!config.discord.channels.includes(msg.channel.name)) return;
-    
+    if (!config.discord.channels.includes(msg.channel.id)) return;
+
     // Here we separate our "command" name, and our "arguments" for the command. 
     // e.g. if we have the message "!say Is this the real life?" , we'll get the following:
     // command = say
@@ -72,6 +76,8 @@ client.on('message', msg => {
     }
     // Ignore none command messages 
     if (msg.content.indexOf(config.discord.prefix) !== 0) return;
+
+    console.log("Command: " + command);
 
     // Handle command
     const cmd = CH.getCommand('!' + command);

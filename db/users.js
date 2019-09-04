@@ -14,6 +14,9 @@ const collectionKey = 'users';
 
 module.exports = {
 
+    /**
+     * Returns an array of all ranked solo players if any, sorted in order of rank. 
+     */
     getSoloRankedUsersSorted() {
         return new Promise(function (resolve, reject) {
             MongoClient.connect(url, function(err, db) {
@@ -24,11 +27,13 @@ module.exports = {
                         if (err)
                             reject(err);
                         else  {
+                            /*
                             res.sort(function (u1, u2) {
                                 if (u1.soloWins == u2.soloWins) 
                                    return u1.soloLosses - u2.soloLosses;
                                 return u2.soloWins - u1.soloWins;
                             });
+                            */
                             resolve(res);
                         }
                     });
@@ -39,6 +44,9 @@ module.exports = {
         });
     },
 
+     /**
+     * Returns an array of all ranked team players if any, sorted in order of rank. 
+     */
     getTeamRankedUsersSorted() {
         return new Promise(function (resolve, reject) {
             MongoClient.connect(url, function(err, db) {
@@ -49,11 +57,13 @@ module.exports = {
                         if (err)
                             reject(err);
                         else  {
+                            /*
                             res.sort(function (u1, u2) {
                                 if (u1.teamWins == u2.teamWins) 
                                    return u1.teamLosses - u2.teamLosses;
                                 return u2.teamWins - u1.teamWins;
                             });
+                            */
                             resolve(res);
                         }
                     });
@@ -64,6 +74,10 @@ module.exports = {
         });
     },
 
+    
+    /**
+     * Returns an array of all ranked ffa players if any, sorted in order of rank.  
+     */
     getFFARankedUsersSorted() {
         return new Promise(function (resolve, reject) {
             MongoClient.connect(url, function(err, db) {
@@ -74,11 +88,13 @@ module.exports = {
                         if (err)
                             reject(err);
                         else  {
+                            /*
                             res.sort(function (u1, u2) {
                                 if (u1.ffaWins == u2.ffaWins) 
                                    return u1.ffaLosses - u2.ffaLosses;
                                 return u2.ffaWins - u1.ffaWins;
                             });
+                            */
                             resolve(res);
                         }
                     });
@@ -89,6 +105,11 @@ module.exports = {
         });
     },
 
+    
+    /**
+     * Returns the ffa game ranking of a user with matching name. A 0 idicates that the user has no ranking. 
+     * @param {*} name target user
+     */
     getUserFFARank(name) {
         return new Promise(function (resolve, reject) {
             MongoClient.connect(url, function(err, db) {
@@ -107,7 +128,7 @@ module.exports = {
                             for (var i = 0; i < res.length; i++) {
                                 if (res[i].ffaWins == 0)   // no rank without a win
                                     resolve(0);
-                                if (name == res[i].name.toLowerCase()) 
+                                if (name == res[i].dbName) 
                                     resolve(i + 1);
                             }
                             resolve(0);
@@ -120,6 +141,11 @@ module.exports = {
         });
     },
     
+    
+    /**
+     * Returns the solo game ranking of a user with matching name. A 0 idicates that the user has no ranking. 
+     * @param {*} name target user
+     */
     getUserSoloRank(name) {
         return new Promise(function (resolve, reject) {
             MongoClient.connect(url, function(err, db) {
@@ -138,7 +164,7 @@ module.exports = {
                             for (var i = 0; i < res.length; i++) {
                                 if (res[i].soloWins == 0)   // no rank without a win
                                     resolve(0);
-                                if (name == res[i].name.toLowerCase()) 
+                                if (name == res[i].dbName) 
                                     resolve(i + 1);
                             }
                             resolve(0);
@@ -151,6 +177,10 @@ module.exports = {
         });
     },
 
+    /**
+     * Returns the team game ranking of a user with matching name. A 0 idicates that the user has no ranking. 
+     * @param {*} name target user
+     */
     getUserTeamRank(name) {
         return new Promise(function (resolve, reject) {
             MongoClient.connect(url, function(err, db) {
@@ -169,7 +199,7 @@ module.exports = {
                             for (var i = 0; i < res.length; i++) {
                                 if (res[i].teamWins == 0)   // no rank without a win
                                     resolve(0);
-                                if (name == res[i].name.toLowerCase()) 
+                                if (name == res[i].dbName) 
                                     resolve(i + 1);
                             }
                             resolve(0);
@@ -182,6 +212,10 @@ module.exports = {
         });
     },
 
+    /**
+     * Finds one user with matching user name. 
+     * @param {*} name user name
+     */
     getUserByName(name) {
         return new Promise(function (resolve, reject) {
             MongoClient.connect(url, function(err, db) {
@@ -201,6 +235,10 @@ module.exports = {
         });
     },
 
+    /**
+     * Queries the database for a user with a matching substring "pin" would return Pinzu and so on. 
+     * @param {*} search search term
+     */
     getMatchingUsers(search) {
         return new Promise(function (resolve, reject) {
             MongoClient.connect(url, function(err, db) {
@@ -220,6 +258,9 @@ module.exports = {
         });
     },
     
+    /**
+     * Returns all users stored in the database
+     */
     getAll() {
         return new Promise(function (resolve, reject) {
             MongoClient.connect(url, function(err, db) {
@@ -239,6 +280,12 @@ module.exports = {
         });
     },
 
+    /**
+     * Increases the stats to all players found in the replay. The multipler is used to specify if it the user stats 
+     * should be increased (1) or decreased (-1).
+     * @param {*} replay replay object
+     * @param {*} mult incresement multipler 
+     */
     increaseStats(replay, mult) {
         return new Promise(function (resolve, reject) {
             MongoClient.connect(url, function(err, db) {

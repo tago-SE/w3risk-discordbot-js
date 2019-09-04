@@ -9,6 +9,9 @@ const collectionKey = 'admins';
 
 module.exports = {
 
+    /**
+     * Returns all bot admins stored in the database as an array.  
+     */
     getAll() {
         return new Promise(function (resolve, reject) {
             MongoClient.connect(url, function(err, db) {
@@ -28,6 +31,10 @@ module.exports = {
         });
     },
 
+    /**
+     * Queries the database for a admin with the provided name. 
+     * @param {*} adminName target name
+     */
     getAdmin(adminName) {
         return new Promise(function (resolve, reject) {
             MongoClient.connect(url, function(err, db) {
@@ -47,6 +54,10 @@ module.exports = {
         });
     },
 
+    /**
+     * Inserts a admin to the list of admins
+     * @param {*} adminName 
+     */
     insertAdmin(adminName) {
         adminName = adminName.toLowerCase();
         return new Promise(function (resolve, reject) {
@@ -66,6 +77,10 @@ module.exports = {
         });
     },
 
+    /**
+     * Removes a admin from the list of admins
+     * @param {*} adminName name of admin to be removed
+     */
     deleteAdmin(adminName) {
         return new Promise(function (resolve, reject) {
             MongoClient.connect(url, function(err, db) {

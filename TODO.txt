@@ -1,0 +1,8 @@
+- add version filter functionality
+- add a 5 second delay from that a replay is uploaded to scoreboard is updated
+- Fix so that it wont crash if text is written inside the scoreboard channel
+- Add a command to reset player stats for admins
+- Hide admin commands by deleting them when typed.
+- Add SS kill/death counter
+- Add encryption/decryption of "other"
+- On: -stats check to see if the channel name is the same as their bnet name

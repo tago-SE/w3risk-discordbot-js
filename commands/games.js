@@ -3,6 +3,7 @@ const secret = require("../.secret.json");
 const MessageUtils = require("../utils/messageutils");
 const Discord = require('discord.js');
 const dateFormat = require('dateformat');
+const Replays = require("../db/replays");
 
 module.exports = class GamesCommand {
 
@@ -13,33 +14,25 @@ module.exports = class GamesCommand {
     }
 
     run(client, msg, args) {
-        var url = "mongodb://" + secret.db.host + ":" + secret.db.port + "/" + secret.db.name;
-        var MongoClient = require('mongodb').MongoClient;
-        MongoClient.connect(url, function(err, db) {
-            if (err) {
-                msg.channel.send(MessageUtils.error("Failed to establish connetion with database."));
-                return;
-            }
-            const search = args[0].toLowerCase();
-            const dbo = db.db(secret.db.name);
-            dbo.collection('replays').find({ players: {
-                    $elemMatch: {name : {$regex: new RegExp('^'+ search + '$', "i") }} 
-                }
-            }).limit(config.games.limit).toArray(function (err, res) {
-                if (err) {
-                    msg.channel.send(MessageUtils.error("Failed to query the database."));
-                    return;
-                }
-                if (res.length > 0) {
-                    res.sort(function (r1, r2) {
+
+        if (args.length < 1) {
+            msg.channel.send(MessageUtils.error("No player specified."));
+            return;
+        }
+        const search = args[0].toLowerCase();
+        (async () => {
+            try {
+                const replays = await Replays.searchPlayerHistory(search);
+                if (replays.length > 0) {
+                    replays.sort(function (r1, r2) {
                         return r2.timestamp - r1.timestamp;
                     });
                     var ids = "";
                     var results = "";
                     var dates = "";
                     var title = search;
-                    for (var i = 0; i < res.length; i++) {
-                        var replay = res[i];
+                    for (var i = 0; i < replays.length; i++) {
+                        var replay = replays[i];
                         var titleStr = "(Unranked)";
                         if (replay.rankedMatch) 
                         titleStr = "(Ranked)";
@@ -60,18 +53,20 @@ module.exports = class GamesCommand {
                                 break;
                             }
                         }
-                        
-                    } 
+                    }
                     msg.channel.send(new Discord.RichEmbed()
-                    .setColor(config.discord.color_1)
-                    .setTitle(title)
-                    .addField('Replay', ids, true)
-                    .addField('Result', results, true)
-                    .addField('Date', dates, true));
-                } else {
+                        .setColor(config.discord.color_1)
+                        .setTitle(title)
+                        .addField('Replay', ids, true)
+                        .addField('Result', results, true)
+                        .addField('Date', dates, true));
+                } 
+                else {
                     msg.channel.send(MessageUtils.error("No players found matching {" + search + "}."));
                 }
-            });
-        });
+            } catch(err) {
+                msg.channel.send(MessageUtils.error("Failed to query the database."));
+            }
+        })();
     }
 }

@@ -9,4 +9,14 @@ module.exports = class MessageUtils {
                 "```"; 
    }
 
+   static formatRatio(n, m, dec) {
+        if (m == 0) {
+            if (n != 0)
+                return "" + (1).toFixed(dec);
+            return "" + (0).toFixed(dc);
+        }
+        return (n/m).toFixed(dec);
+   }
+
+
 } 

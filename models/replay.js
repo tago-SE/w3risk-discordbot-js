@@ -53,6 +53,15 @@ class Replay {
         }
     }
 
+    getPlayer(name) {
+        name = name.toLowerCase();
+        for (var i = 0; i < this.players.length; i++) {
+            if (this.players[i] != null && this.players[i].name.toLowerCase() === name)
+                return this.players[i];
+        }   
+        return null;
+    }
+
     toString() { 
         var playerStr = "";
         for (var i = 0; i < this.players; i++) {

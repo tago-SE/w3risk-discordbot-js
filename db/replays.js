@@ -9,6 +9,10 @@ const collectionKey = 'replays';
 
 module.exports = {
 
+    /**
+     * Queries the database for a replay with a matching replay id. 
+     * @param {*} gameId replay id
+     */
     getReplayByGameId(gameId) {
         return new Promise(function (resolve, reject) {
             MongoClient.connect(url, function(err, db) {
@@ -28,6 +32,11 @@ module.exports = {
         });
     },
 
+    /**
+     * Updates a replays ranked status to the provided flag
+     * @param {*} gameId the replay id
+     * @param {*} flag boolean flag
+     */
     updateRankedById(gameId, flag) {
         return new Promise(function (resolve, reject) {
             MongoClient.connect(url, function(err, db) {
@@ -45,4 +54,49 @@ module.exports = {
             });
         });
     },
+
+    /**
+     *  
+     * @param {*} search 
+     */
+    searchPlayerHistory(search) {
+        return new Promise(function (resolve, reject) {
+            MongoClient.connect(url, function(err, db) {
+                if (err) 
+                    reject(err);
+                else {
+                    db.db(dbName).collection(collectionKey).find({ players: {
+                        $elemMatch: {name : {$regex: new RegExp('^'+ search + '$', "i") }} 
+                    }
+                    }).limit(config.games.limit).toArray(function (err, res) {
+                        if (err) {
+                            console.log(err);
+                            resolve([]);
+                        }                       
+                        resolve(res);
+                    });
+                }
+            });
+        });
+    },
+
+    getPlayerReplays(name) {
+        return new Promise(function (resolve, reject) {
+            MongoClient.connect(url, function(err, db) {
+                if (err) 
+                    reject(err);
+                else {
+                    db.db(dbName).collection(collectionKey).find({ players: {$elemMatch: {name : {$regex: new RegExp('^'+ name + '$', "i")} } }
+                    }).toArray(function (err, res) {
+                        if (err) {
+                            console.log(err);
+                            resolve([]);
+                        }                       
+                        resolve(res);
+                    });
+                }
+            });
+        });
+    }
+    
 }

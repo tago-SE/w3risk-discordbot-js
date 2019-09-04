@@ -1,21 +1,26 @@
 {
     "discord": {
         "prefix": "!",
-        "admins": ["tago#2830", "Saran#2411"],
         "superusers": ["tago#2830"],
         "color_1": "#0099ff",
-        "channels": ["general"]
+        "channels": ["608765445872549898", "612227462662979596"]
     },
     "scoreboard": {
         "color": "#0099ff",
         "limit": 30,
         "rankLimit": 100,
-        "channelId": "612532804844126238",
+        "kd_decimals": 1,
+        "channelId": "609314640639295488",
         "soloTitle": "Risk Solo League",
         "teamTitle": "Risk Team League",
         "ffaTitle": "Risk FFA League"
         
     }, 
+    
+    "submissions": {
+        "channelId": "608765445872549898"
+    },
+
     "games": {
         "limit": 30
     }
