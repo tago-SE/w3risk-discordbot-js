@@ -1,6 +1,5 @@
 const MessageUtils = require("../../utils/messageutils");
 const Admins = require('../../db/admins');
-const config = require("../../config.json");  
 
 /**
  * This command enables superusers to grant or remove admin access to members of the channel. 
@@ -18,9 +17,11 @@ module.exports = class AdminCommand {
     run(client, msg, args) {
 
         var name = msg.author.username + "#" + msg.author.discriminator;
+        const ConfigUtils = require('../../utils/configutils');
+        let localConfig = ConfigUtils.findConfigMatchingMessage(msg);
 
         // Only superusers are allowed to change admin status of users
-        if (!config.discord.superusers.includes(name)) {
+        if (!localConfig.superusers.includes(name)) {
             msg.channel.send(MessageUtils.error("Unauthorized access."));
             return;
         }
@@ -29,7 +30,7 @@ module.exports = class AdminCommand {
             return;
         }
         var adminName = args[0].toLowerCase();
-        if (config.discord.superusers.includes(adminName)) {
+        if (localConfig.superusers.includes(adminName)) {
             msg.channel.send(MessageUtils.error("Cannot modify admin status of superuser {" + adminName + "}."));
             return;
         }

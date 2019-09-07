@@ -1,5 +1,3 @@
-// Requirements
-const config = require("../config.json");  
 const MessageUtils = require("../utils/messageutils");
 const Users = require('../db/users');
 // Constants
@@ -10,7 +8,8 @@ module.exports = class PlayersCommand {
     constructor() {
         this.name = 'players',
         this.alias = ['p'],
-        this.usage = 'Queries for matching player names.'
+        this.usage = '!players [search]'
+        this.desc = 'Queries for matching player names.'
     }
 
     run(client, msg, args) {

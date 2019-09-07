@@ -1,5 +1,3 @@
-const config = require("../config.json");  
-const secret = require("../.secret.json");  
 const MessageUtils = require("../utils/messageutils");
 const Discord = require('discord.js');
 const dateFormat = require('dateformat');
@@ -10,7 +8,8 @@ module.exports = class GamesCommand {
     constructor() {
         this.name = 'games',
         this.alias = ['g'],
-        this.usage = 'Display users last played games.'
+        this.usage = '!games [user]'
+        this.desc = 'Lists a users played games.'
     }
 
     run(client, msg, args) {
@@ -54,8 +53,12 @@ module.exports = class GamesCommand {
                             }
                         }
                     }
+
+                    const ConfigUtils = require('../utils/configutils');
+                    let localConfig = ConfigUtils.findConfigMatchingMessage(msg);
+
                     msg.channel.send(new Discord.RichEmbed()
-                        .setColor(config.discord.color_1)
+                        .setColor(localConfig.color)
                         .setTitle(title)
                         .addField('Replay', ids, true)
                         .addField('Result', results, true)

@@ -13,7 +13,7 @@ module.exports = class MessageUtils {
         if (m == 0) {
             if (n != 0)
                 return "" + (1).toFixed(dec);
-            return "" + (0).toFixed(dc);
+            return "" + (0).toFixed(dec);
         }
         return (n/m).toFixed(dec);
    }

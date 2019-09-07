@@ -10,8 +10,13 @@ const request = require('request-promise');
 //
 //import request from 'request-promise';
 
+const Wc3Stats = require('./controllers/Wc3Stats')
 // Test
 const Users = require('./db/users');
+const ConfigUtils = require('./utils/configutils');
+// END Test
+
+
 
 const CH = new CommandHandler({
     folder: __dirname + "/commands/",
@@ -32,13 +37,19 @@ client.on('guildCreate', guild => {
     client.user.setActivity(`Serving ${client.guilds.size} servers`);
 });
 
+/*
 client.on('guildMemberAdd', member => {
     member.send("Welcome to the Risk Server! :)\n" +
     "If you wish to participate in the Risk-League you should checkout <#" + config.submissions.channelId + ">, " + 
     "where you can submit replays of your victores to climb the risk-ladder.");
 });
+*/
   
 client.on('message', msg => {
+
+    // TEST
+    // Name has changed
+    // ReplayWatcher.fetchLatestReplays();
 
     // Ignore messages sent by bots
     if (msg.author.bot)  return;
@@ -59,6 +70,20 @@ client.on('message', msg => {
         if (fname.substring(fname.length - 4, fname.length) !== ".w3g") {
             msg.channel.send(MessageUtils.error("Invalid file format. Can only read w3g files."));
         } else {
+
+            Wc3Stats.postReplayAttachment(attached)
+            .then(json => {
+                msg.channel.send("Replay uploaded: https://wc3stats.com/games/" + json.body.id);
+                const SubmitCommand = require('./commands/submit');
+                new SubmitCommand().run(client, msg, [json.body.id]); 
+            })
+            .catch(err => {
+                console.log(err);
+            });
+
+
+            /*
+
             let formData = {
                 file: request (attached.url)
             };
@@ -70,9 +95,10 @@ client.on('message', msg => {
             })
             .catch(function (err) {
                 console.log(err);
-            }); 
+            });
+            */ 
         }
-        msg.delete();
+        //msg.delete();
     }
     // Ignore none command messages 
     if (msg.content.indexOf(config.discord.prefix) !== 0) return;

@@ -2,8 +2,6 @@ const MessageUtils = require("../../utils/messageutils");
 const Admins = require('../../db/admins');
 const Users = require('../../db/users');
 const Replays = require('../../db/replays');
-const config = require("../../config.json");  
-const BnetUser = require('../../models/user');
 const Scoreboard = require('../../models/scoreboard');
 /**
  * This command enables superusers to grant or remove admin access to members of the channel. 
@@ -20,9 +18,11 @@ module.exports = class AdminCommand {
 
     run(client, msg, args) {
         var name = (msg.author.username + "#" + msg.author.discriminator).toLowerCase();
+        const ConfigUtils = require('../../utils/configutils');
+        let localConfig = ConfigUtils.findConfigMatchingMessage(msg);
         (async () => {
             var admin = await Admins.getAdmin(name)
-            if (admin == null && !config.discord.superusers.includes(name)) {
+            if (admin == null && !localConfig.superusers.includes(name)) {
                 msg.channel.send(MessageUtils.error("Unauthorized access."));
                 return;  
             }
@@ -48,13 +48,12 @@ module.exports = class AdminCommand {
             }
             // Invalidate replay
             if (replay.rankedMatch && flag === "false") {
-            
                 try {
                     await Replays.updateRankedById(gameId, false);
                     msg.channel.send("Replay {" + gameId + "} invalidated.");
                     await Users.increaseStats(replay, -1);  // Decrease stats 
                     msg.channel.send("Stats have been updated.");
-                    Scoreboard.updateScoreboard(client, replay);
+                    Scoreboard.updateScoreboard(client, replay.gameType);
                 } catch (err) {
                     console.log(err);
                 }
@@ -64,7 +63,7 @@ module.exports = class AdminCommand {
                     msg.channel.send("Replay {" + gameId + "} validated as ranked.");
                     await Users.increaseStats(replay, 1);   // Increase stats 
                     msg.channel.send("Stats have been updated.");
-                    Scoreboard.updateScoreboard(client, replay);
+                    Scoreboard.updateScoreboard(client, replay.gameType);
                 } catch(err) {
                     console.log(err);
                 }

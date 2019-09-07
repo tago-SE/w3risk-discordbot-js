@@ -2,8 +2,6 @@ const fetch = require('node-fetch');
 const Discord = require('discord.js');
 const Replay = require('../models/replay');
 const Player = require('../models/player');
-const BnetUser = require('../models/user');
-const config = require("../config.json");  
 const secret = require("../.secret.json");   
 const MessageUtils = require("../utils/messageutils");
 const Scoreboard = require("../models/scoreboard");
@@ -14,7 +12,8 @@ module.exports = class SubmitCommand {
     {
         this.name = 'submit',
         this.alias = ['s'],
-        this.usage = 'Submits a replay id from wc3stats.com'
+        this.usage = '!submit [replay id]'
+        this.desc = 'Submits a replay id from wc3stats.com'
     }
 
     static formatResultTitle(replay) 
@@ -60,9 +59,13 @@ module.exports = class SubmitCommand {
             resultStr += replay.players[i].result + "\n";
             kdStr += replay.players[i].kills + "/" + replay.players[i].deaths + "\n";
         }
+
+        const ConfigUtils = require('../utils/configutils');
+        let localConfig = ConfigUtils.findConfigMatchingMessage(msg);
+
         // Update Display
         const embdedResult = new Discord.RichEmbed()
-        .setColor(config.discord.color_1)
+        .setColor(localConfig.color)
         .setTitle(SubmitCommand.formatResultTitle(replay))
         .setURL('https://wc3stats.com/games/' + replay.id)
         .setDescription(SubmitCommand.formatResultSettings(replay))
@@ -97,6 +100,12 @@ module.exports = class SubmitCommand {
                 const replay = new Replay();
                 replay.id = json.body.id;
                 replay.map = json.body.map;
+
+                // TEST
+                if (replay.map !== "Risk Reforged") {
+                    console.log("Invalid map?");
+                }
+
                 replay.length = json.body.length;
                 replay.uploader = json.body.uploads[0].saver;
                 replay.timestamp = json.body.playedOn*1000;
@@ -169,15 +178,9 @@ module.exports = class SubmitCommand {
                                     SubmitCommand.displayResult(msg, replay);
                                     if (replay.rankedMatch) 
                                     {
-                                        var start = Date.now();
                                         (async () => {
-                                            var start = new Date();
-                                            console.log("increasing user stats..." + (new Date() - start));
                                             await Users.increaseStats(replay, 1);
-                                            console.log("increasing user stats done..." + (new Date() - start));
-                                            console.log("Updating scoreboard..." + (new Date() - start));
-                                            Scoreboard.updateScoreboard(client, replay),
-                                            console.log("Updating scoreboard done..." + (new Date() - start));
+                                            Scoreboard.updateScoreboard(client, replay.gameType);
                                         })();
                                     }
                                 }

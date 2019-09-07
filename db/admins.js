@@ -1,7 +1,6 @@
 // Requirements
 const MongoClient = require('mongodb').MongoClient;
 const secret = require("../.secret.json");  
-const config = require("../config.json");  
 // Constants
 const url = "mongodb://" + secret.db.host + ":" + secret.db.port + "/" + secret.db.name;
 const dbName = secret.db.name;

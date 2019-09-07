@@ -281,6 +281,37 @@ module.exports = {
     },
 
     /**
+     * Increases the user stats with the stats found inside the argument. So if user.soloWins = 1 then soloWins are increased by 1 and so on.
+     * @param {BnetUser} u 
+     */
+    increateSingleUserStats(u) {
+        return new Promise(function (resolve, reject) {
+            MongoClient.connect(url, function(err, db) {
+                if (err) 
+                    reject(err);
+                else {
+                    (async () => {
+                        await db.db(dbName).collection(collectionKey).updateOne({dbName: u.dbName}, 
+                            {
+                                $inc: 
+                                { 
+                                    soloWins: parseInt(u.soloWins), soloLosses: parseInt(u.soloLosses), soloKills: parseInt(u.soloKills), soloDeaths: parseInt(u.soloDeaths),
+                                    teamWins: parseInt(u.teamWins), teamLosses: parseInt(u.teamLosses), teamKills: parseInt(u.teamKills), teamDeaths: parseInt(u.teamDeaths),
+                                    ffaWins: parseInt(u.ffaWins), ffaLosses: parseInt(u.ffaLosses), ffaKills: parseInt(u.ffaKills), ffaDeaths: parseInt(u.ffaDeaths) 
+                                } 
+                            },
+                            {upsert: true},
+                        ); 
+                    })();
+                }
+                if (db !== null) 
+                    db.close();
+                resolve();
+            });
+        });
+    },
+
+    /**
      * Increases the stats to all players found in the replay. The multipler is used to specify if it the user stats 
      * should be increased (1) or decreased (-1).
      * @param {*} replay replay object
