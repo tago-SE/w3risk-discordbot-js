@@ -80,23 +80,6 @@ client.on('message', msg => {
             .catch(err => {
                 console.log(err);
             });
-
-
-            /*
-
-            let formData = {
-                file: request (attached.url)
-            };
-            request.post('https://api.wc3stats.com/upload', {formData, json: true})
-            .then(function (json) {
-                msg.channel.send("Replay uploaded: https://wc3stats.com/games/" + json.body.id);
-                const SubmitCommand = require('./commands/submit');
-                new SubmitCommand().run(client, msg, [json.body.id]); 
-            })
-            .catch(function (err) {
-                console.log(err);
-            });
-            */ 
         }
         //msg.delete();
     }

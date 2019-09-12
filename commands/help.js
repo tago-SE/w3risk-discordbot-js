@@ -21,6 +21,7 @@ module.exports = class HelpCommand {
         .addField("Commands", "Type '!commands' to see a list of available commands.")
         .addField("Valid Games", "For a replay to be accepted it must be from version 1.54+ and have standard host options to count as a league game. " +
         "For FFA a minimum of 10 players are required. If you play a team game or 1vs1 then select one of the host items called 'Pro Mode'.")
+        .addField("Uplad Failure", "If the replay failed to be uploaded properly contact a admin and provide a screenshot of the coreboard right before win.")
         );
     }
 }

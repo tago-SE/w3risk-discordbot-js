@@ -77,126 +77,71 @@ module.exports = class SubmitCommand {
         msg.channel.send(embdedResult);
     }
 
-    run(client, msg, args) 
-    {
+    run(client, msg, args) {
         const id = parseInt(args[0]);
         if (isNaN(id)) 
         {
             msg.channel.send(MessageUtils.error("Invalid replay id {" + args[0] + "}"));
             return;
         }
-        fetch(`https://api.wc3stats.com/replays/` + id + `&toDisplay=true`)
-        .then(res => res.json())
-        .then(json => {
-            console.log(json)
-            try 
-            {
-                var body = json.body;
-                if (!body) 
-                {
-                    msg.channel.send(MessageUtils.error("Could not find any replay witht he id {" + id + "}"));
-                    return;
-                }
-                const replay = new Replay();
-                replay.id = json.body.id;
-                replay.map = json.body.map;
+        (async () => {            
 
-                // TEST
-                if (replay.map !== "Risk Reforged") {
-                    console.log("Invalid map?");
-                }
-
-                replay.length = json.body.length;
-                replay.uploader = json.body.uploads[0].saver;
-                replay.timestamp = json.body.playedOn*1000;
-                
-                const playersObj = json.body.data.game.players;
-                for (var i = 0; i < playersObj.length; i++) 
-                {
-                    const playerObj = playersObj[i];
-                    var player = new Player();
-
-                    // Default player data
-                    player.name = playerObj.name;
-                    player.apm = playerObj.apm;
-                    player.stayPercent = playerObj.stayPercent;
-
-                    // Custom player data
-                    const varObj = playerObj.variables;
-
-                    // Settings stored inside the first player
-                    if (i == 0) 
-                    {
-                        var args = varObj.other.split(' ');
-                        replay.rankedMatch = (args[0] === "1");
-                        replay.fog = args[1];
-                        replay.turns = args[2];
-                        replay.version = args[3];
-                    }
-                    player.result = varObj.result;
-                    player.kills = varObj.kills;
-                    player.deaths = varObj.deaths;
-                    player.gold = varObj.gold;
-                    player.team = varObj.team;
-                    // Add none observing players to the list
-                    if (player.result != null && player.result !== "obs")  
-                        replay.players.push(player);
-                }
-                // Detects game type depending on team arrangement and sorts players accordingly 
-                replay.update();   
-
-                // Debug
-                // msg.channel.send(replay.toString());
-                //   
-                var MongoClient = require('mongodb').MongoClient;
-                var url = "mongodb://" + secret.db.host + ":" + secret.db.port + "/" + secret.db.name;
-
-
-
-                // Needs to be updated to use /db/. files
-                MongoClient.connect(url, {useNewUrlParser: true }, function(err, db) 
-                {
-                    if (err) 
-                    {
-                        msg.channel.send(MessageUtils.error("Failed to establish connetion with database."));
-                        return;
-                    }
-                    const dbo = db.db(secret.db.name);
-                    dbo.collection('replays').findOne({id: replay.id}, function (err, result) 
-                    {    
-                        if (err) 
-                            throw err;
-                        if (result) 
-                        {
-                            msg.channel.send(MessageUtils.error("Replay {" + replay.id + "} has already been submitted.")); 
-                        } else 
-                        {
-                            dbo.collection('replays').insertOne(replay, function(err, result) 
-                            {
-                                if (err) throw err;
-                                if (result) {
-                                    SubmitCommand.displayResult(msg, replay);
-                                    if (replay.rankedMatch) 
-                                    {
-                                        (async () => {
-                                            await Users.increaseStats(replay, 1);
-                                            Scoreboard.updateScoreboard(client, replay.gameType);
-                                        })();
-                                    }
-                                }
-                            }); 
-                        } 
-                    });
-                });
-            } catch (err) 
-            {
-                console.log(err);
-                msg.channel.send(MessageUtils.error("Failed to parse replay {" + args[0] + "}"));
+            const Wc3stats = require("../controllers/Wc3Stats");
+            var jsonBody = await Wc3stats.fetchReplayById(id);           
+            if (jsonBody == null || jsonBody == "No results found.") {
+                msg.channel.send(MessageUtils.error("Failed to fetch replay {" + id + "} from end point."));
+                return;
             }
+            console.log(jsonBody);
+
+            const Replays = require("../db/replays");
+            const ParseReplay = require("../controllers/ParseReplay");
+
+            // Attempt to parse replay
+            //
+            var replay = ParseReplay.parseRisk(jsonBody);
+
+            if (replay.error != 0) {
+                const Maps = require('../db/maps');
+                const foundMap = await Maps.getMap(replay.map);
+                if (foundMap != null) {
+                    var ver = replay.richMap.substring(14, 19);
+                    if (foundMap.versions != undefined && foundMap.versions.includes(ver)) {
+                        msg.channel.send(MessageUtils.error("Failed to parse replay {" + id + "}"));
+                        Replays.setReplayFailureFlag(id, replay.error);
+                    } 
+                    else {
+                        msg.channel.send(MessageUtils.error("Does not support version {" + ver + "}"));
+                    }
+                } 
+                else {
+                    msg.channel.send(MessageUtils.error("Does not support map {" + replay.map + "}"));
+                }
+                return;
+            }
+            try {
+                var result = await Replays.getReplayByGameId(replay.id);
+                if (result == null) {
+                    Replays.insert(replay);
+                    SubmitCommand.displayResult(msg, replay);
+                    if (replay.rankedMatch) {
+                        await Users.increaseStats(replay, 1);
+                        Scoreboard.updateScoreboard(client, replay.gameType);
+                    }
+                } else {
+                    msg.channel.send(MessageUtils.error("Replay already submitted {" + replay.id + "}"));
+                }
+            } catch (err) {
+                console.log(err);
+            }
+        })();
+        
+        /*
         }).catch(err => 
         {
             console.log(err);
             msg.channel.send(MessageUtils.error("Failed to parse replay {" + args[0] + "}"));
         });
+        */
     }
 }

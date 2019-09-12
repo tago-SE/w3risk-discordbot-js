@@ -1,5 +1,5 @@
 class Replay {
-
+    
     constructor() {
         this.id = null;
         this.map = null;
@@ -10,8 +10,10 @@ class Replay {
         this.gameType = null;
         this.timestamp = null;
         this.rankedMatch = null;
+        this.richMap = null;
         this.fog = null;
         this.activePlayers = null;
+        this.error = 0;                 // If error != 0 then it failed to be uploaded correctly.       
         this.players = [];
     }
 
@@ -67,10 +69,14 @@ class Replay {
         for (var i = 0; i < this.players; i++) {
             playerStr += this.players[i].toString();
         } 
-        return "Replay{id=" + this.id + ", map=" + this.map + ", version=" + this.version + ", length=" + this.length + 
-        ", uploader=" + this.uploader + ",turns=" + this.turns + ", gameType=" + this.gameType + ", timestamp=" + this.timestamp + 
-        ", rankedMatch=" + this.rankedMatch + ", fog=" + this.fog + ", activePlayers=" + this.activePlayers + ", players=" + playerStr + "}";
+        if (this.error == 0) {
+            return "Replay{id=" + this.id + ", map=" + this.map + ", richMap=" + this.richMap + ", version=" + this.version + ", length=" + this.length + 
+            ", uploader=" + this.uploader + ",turns=" + this.turns + ", gameType=" + this.gameType + ", timestamp=" + this.timestamp + 
+            ", rankedMatch=" + this.rankedMatch + ", fog=" + this.fog + ", activePlayers=" + this.activePlayers + ", players=" + playerStr + "}";
+        }
+        return "Replay{id=" + this.id + ", map=" + this.map + ", richMap=" + this.richMap + ", version=" + this.version + ", error=" + this.error + "}";
     }
+
 
 }
 module.exports = Replay;

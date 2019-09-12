@@ -5,6 +5,7 @@ const BnetUser = require('../models/user');
 const Users = require('../db/users');
 const config = require("../config.json");  
 const MessageUtils = require("../utils/messageutils");
+const MathUtils = require ("../utils/mathutils");
 const fs = require('fs')
 
 const kd_decimals = config.scoreboard.kd_decimals;
@@ -54,8 +55,11 @@ module.exports = class Scoreboard {
         (async () => {
             var users = await Users.getFFARankedUsersSorted();
             users.sort(function (u1, u2) {
-                if (u1.ffaWins == u2.ffaWins) 
+                if (u1.ffaWins == u2.ffaWins) {
+                    if (u1.ffaLosses == u2.ffaLosses)
+                        return MathUtils.ratio(u2.ffaKills, u2.ffaDeaths) - MathUtils.ratio(u1.ffaKills, u1.ffaDeaths);
                     return u1.ffaLosses - u2.ffaLosses;
+                }
                 return u2.ffaWins - u1.ffaWins;
             });
             var names = "";
@@ -76,8 +80,11 @@ module.exports = class Scoreboard {
         (async () => {
             var users = await Users.getTeamRankedUsersSorted();
             users.sort(function (u1, u2) {
-                if (u1.teamWins == u2.teamWins) 
+                if (u1.teamWins == u2.teamWins) {
+                    if (u1.teamLosses == u2.teamLosses)
+                        return MathUtils.ratio(u2.teamKills, u2.teamDeaths) - MathUtils.ratio(u1.teamKills, u1.teamDeaths);
                    return u1.teamLosses - u2.teamLosses;
+                }
                 return u2.teamWins - u1.teamWins;
             });
             var names = "";
@@ -98,8 +105,11 @@ module.exports = class Scoreboard {
         (async () => {
             var users = await Users.getSoloRankedUsersSorted();
             users.sort(function (u1, u2) {
-                if (u1.soloWins == u2.soloWins) 
+                if (u1.soloWins == u2.soloWins) {
+                    if (u1.soloLosses == u2.soloLosses)
+                        return MathUtils.ratio(u2.soloKills, u2.soloDeaths) - MathUtils.ratio(u1.soloKills, u1.soloDeaths);
                    return u1.soloLosses - u2.soloLosses;
+                }
                 return u2.soloWins - u1.soloWins;
             });
             var names = "";
@@ -135,6 +145,18 @@ module.exports = class Scoreboard {
                 console.log("scoreboard: ffa");
                 Scoreboard.updateFFA(client);
             }
+        }, 4000);
+    }
+
+    /**
+     * Updates all the scoreboard after a 4 second delay
+     * @param {*} client 
+     */
+    static update(client) {
+        setTimeout(function() {
+            Scoreboard.updateSolo(client);
+            Scoreboard.updateFFA(client);
+            Scoreboard.updateFFA(client);
         }, 4000);
     }
 }
