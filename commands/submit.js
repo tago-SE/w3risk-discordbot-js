@@ -10,10 +10,10 @@ const Users = require("../db/users");
 module.exports = class SubmitCommand {
     constructor() 
     {
-        this.name = 'submit',
-        this.alias = ['s'],
-        this.usage = '!submit [replay id]'
-        this.desc = 'Submits a replay id from wc3stats.com'
+        this.name = 'submit'
+        this.alias = ['s']
+        this.usage = this.name + " [id]"
+        this.desc = 'Submits a uploaded replay by id from wc3stats.com.'
     }
 
     static formatResultTitle(replay) 
@@ -52,16 +52,18 @@ module.exports = class SubmitCommand {
         for (var i = 0; i < replay.players.length; i++) 
         {
             if (replay.gameType === "team" && replay.players[i].team != -1) {
-                 playerStr += "(" + replay.players[i].team + ") " + replay.players[i].name + "\n";  
+                 playerStr += "(" + replay.players[i].team + ") " + replay.players[i].name + " (" + replay.players[i].apm + ")\n";  
             } 
             else 
-                playerStr += replay.players[i].name + "\n";  
+                playerStr += replay.players[i].name + " (" + replay.players[i].apm + ")\n";  
             resultStr += replay.players[i].result + "\n";
             kdStr += replay.players[i].kills + "/" + replay.players[i].deaths + "\n";
         }
 
         const ConfigUtils = require('../utils/configutils');
         let localConfig = ConfigUtils.findConfigMatchingMessage(msg);
+
+        console.log(replay.toString());
 
         // Update Display
         const embdedResult = new Discord.RichEmbed()
@@ -105,13 +107,12 @@ module.exports = class SubmitCommand {
                 const Maps = require('../db/maps');
                 const foundMap = await Maps.getMap(replay.map);
                 if (foundMap != null) {
-                    var ver = replay.richMap.substring(14, 19);
-                    if (foundMap.versions != undefined && foundMap.versions.includes(ver)) {
+                    if (foundMap.versions != undefined && foundMap.versions.includes(replay.version)) {
                         msg.channel.send(MessageUtils.error("Failed to parse replay {" + id + "}"));
                         Replays.setReplayFailureFlag(id, replay.error);
                     } 
                     else {
-                        msg.channel.send(MessageUtils.error("Does not support version {" + ver + "}"));
+                        msg.channel.send(MessageUtils.error("Does not support version {" + replay.version + "}"));
                     }
                 } 
                 else {
@@ -135,13 +136,5 @@ module.exports = class SubmitCommand {
                 console.log(err);
             }
         })();
-        
-        /*
-        }).catch(err => 
-        {
-            console.log(err);
-            msg.channel.send(MessageUtils.error("Failed to parse replay {" + args[0] + "}"));
-        });
-        */
     }
 }

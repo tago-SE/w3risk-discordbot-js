@@ -7,11 +7,19 @@ const BnetUser = require('../../models/user');
 module.exports = class UpdateStatsCommand {
 
     constructor() {
-        this.name = 'update',
-        this.alias = ['up'],
-        this.usage = '!update'
-        this.disc = "Updates user stats."
-        this.adminCommand = true;
+        this.name = 'update'
+        this.alias = ['up']
+        this.usage = this.name + " [player] [solo/team/ffa] [win/lose] (wins/losses) (kills) (deaths)"
+        this.desc = "Updates user stats."
+        this.adminCommand = true
+    }
+
+    static invalidLeagueError(msg, gameType) {
+        msg.channel.send(MessageUtils.error("Invalid league specified {" + gameType + "}."));
+    }
+
+    static invalidResultError(msg, result) {
+        msg.channel.send(MessageUtils.error("Invalid result specified {" + result + "} must be either 'win' or 'lose'."));
     }
 
     run(client, msg, args) {
@@ -19,6 +27,7 @@ module.exports = class UpdateStatsCommand {
         var adminName = (msg.author.username + "#" + msg.author.discriminator).toLowerCase();
         const ConfigUtils = require('../../utils/configutils');
         const localConfig = ConfigUtils.findConfigMatchingMessage(msg);
+
         (async () => {
             try {
                 var admin = await Admins.getAdmin(adminName)
@@ -34,79 +43,77 @@ module.exports = class UpdateStatsCommand {
 
                 var user = new BnetUser();
                 user.dbName = args[0].toLowerCase();
-                const targetUser = await Users.getUserByName(user.dbName)
-                user.name = targetUser.name;
+                var targetUser = await Users.getUserByName(user.dbName);
+                
                 if (targetUser == null) {
                     msg.channel.send(MessageUtils.error("No player by the name {" + user.dbName + "} was found."));
                     return;
                 }
                 if (args.length < 2) {
-                    msg.channel.send(MessageUtils.error("Must specify a attribute {solowins, sololosses, teamwins, teamlosses}"));
+                    msg.channel.send(MessageUtils.error("Must specify league {ffa, solo, team}."));
                     return;
                 }
                 if (args.length < 3) {
-                    msg.channel.send(MessageUtils.error("Must specify value to change."));
+                    msg.channel.send(MessageUtils.error("Missing result flag {win/lose}."));
                     return;
                 }
-                const change = parseInt(args[2]);
-                if (isNaN(change)) {
-                    msg.channel.send(MessageUtils.error("Failed to parse integer {" + change + "}."));
+
+                if (args.length < 4) {
+                    msg.channel.send(MessageUtils.error("No stat changes were specified."));
                     return;
                 }
-                var gameType = "";
-                if (args[1] == "solowins") {
-                    user.soloWins = parseInt(args[2]);
-                    gameType = "solo";
-                }
-                else if (args[1] == "sololosses") {
-                    user.soloLosses = parseInt(args[2]);
-                    gameType = "solo";
-                }
-                else if (args[1] == "solokills") {
-                    user.soloKills = parseInt(args[2]);
-                    gameType = "solo";
-                }
-                else if (args[1] == "solodeaths") {
-                    user.soloDeaths = parseInt(args[2]);
-                    gameType = "solo";
-                }
-                else if (args[1] == "teamwins") {
-                    user.teamWins = parseInt(args[2]);
-                    gameType = "team";
-                }
-                else if (args[1] == "teamlosses") {
-                    user.teamLosses = parseInt(args[2]);
-                    gameType = "team";
-                }
-                else if (args[1] == "teamkills") {
-                    user.teamKills = parseInt(args[2]);
-                    gameType = "team";
-                }
-                else if (args[1] == "teamdeaths") {
-                    user.teamDeaths = parseInt(args[2]);
-                    gameType = "team";
-                }
-                else if (args[1] == "ffawins") {
-                    user.ffaWins = parseInt(args[2]);
-                    gameType = "ffa";
-                }
-                else if (args[1] == "ffalosses") {
-                    user.ffaLosses = parseInt(args[2]);
-                    gameType = "ffa";
-                }
-                else if (args[1] == "ffakills") {
-                    user.ffaKills = parseInt(args[2]);
-                    gameType = "ffa";
-                }
-                else if (args[1] == "ffadeaths") {
-                    user.ffaDeaths = parseInt(args[2]);
-                    gameType = "ffa";
-                }
+                user.name = targetUser.name;
+                var n = (isNaN(args[3])? 0 : parseInt(args[3]));
+                var k = (isNaN(args[4])? 0 : parseInt(args[4]));
+                var d = (isNaN(args[5])? 0 : parseInt(args[5]));
+                var gameType = args[1].toLowerCase();
+                var result = args[2].toLowerCase();
+                if (gameType == "ffa") {
+                    user.ffaKills = k;
+                    user.ffaDeaths = d;
+                    if (result ==  "win") {
+                        user.ffaWins =  n;
+                    }
+                    else if (result == "lose") {
+                        user.ffaLosses = n;
+                    } 
+                    else {
+                        UpdateStatsCommand.invalidResultError(msg, result);
+                        return;
+                    }
+                } 
+                else  if (gameType == "solo") {
+                    user.soloKills = k;
+                    user.soloDeaths = d;
+                    if (result ==  "win") {
+                        user.soloWins =  n;
+                    }
+                    else if (result == "lose") {
+                        user.soloLosses = n;
+                    } 
+                    else {
+                        UpdateStatsCommand.invalidResultError(msg, result);
+                        return;
+                    }
+                } 
+                else  if (gameType == "team") {
+                    user.teamKills = k;
+                    user.teamDeaths = d;
+                    if (result ==  "win") {
+                        user.teamWins =  n;
+                    }
+                    else if (result == "lose") {
+                        user.teamLosses = n;
+                    } 
+                    else {
+                        UpdateStatsCommand.invalidResultError(msg, result);
+                        return;
+                    }
+                } 
                 else {
-                    msg.channel.send(MessageUtils.error("Invalid field {" + args[1] + "}."));
+                    UpdateStatsCommand.invalidLeagueError(msg, gameType);
                     return;
                 }
-                
                 await Users.increateSingleUserStats(user);
                 Scoreboard.updateScoreboard(client, gameType);
                 msg.channel.send("Updated {" + user.name + "} stats.");

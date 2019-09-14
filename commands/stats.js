@@ -6,10 +6,10 @@ const unranked = "none";
 module.exports = class StatsCommand {
 
     constructor() {
-        this.name = 'stats',
-        this.alias = ['st'],
-        this.usage = '!stats [player]'
-        this.desc = 'Shows player risk stats.'
+        this.name = 'stats'
+        this.alias = ['st']
+        this.usage = this.name + " [player]"
+        this.desc = 'Reveals player stats.'
     }
 
     static ratio(n, m) {

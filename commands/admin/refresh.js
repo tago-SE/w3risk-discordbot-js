@@ -6,10 +6,10 @@ const Scoreboard = require('../../models/scoreboard');
 module.exports = class RefreshCommand {
 
     constructor() {
-        this.name = 'refresh',
-        this.alias = ['ref'],
-        this.usage = '!refresh'
-        this.disc = "Refreshes the scoreboard."
+        this.name = 'refresh'
+        this.alias = ['ref']
+        this.usage = this.name + " (ffa/solo/team/replays)"
+        this.desc = "Refreshes the scoreboard or pulls the last uploaded replays from wc3stats.com"
         this.adminCommand = true;
     }
 
@@ -47,19 +47,21 @@ module.exports = class RefreshCommand {
                     const Wc3Stats = require("../../controllers/Wc3Stats");
                     const replays = await Wc3Stats.fetchLatestReplays();
                     for (var i = 0; i < replays.length; i++) {
-                        if (replays[i].map == "Risk Reforged") {
+                        if (replays[i].map == "Risk Reforged") {    // Static filter, needs fix
                             var id = replays[i].id;
                             var replay = await Wc3Stats.fetchReplayById(id);
                             var map = replay.data.game.map.substring(0, 19);
                             var mapName = replay.map;
-                            var ver = map.substring(14, 19);
 
+                            const ParseReplay = require('../../controllers/ParseReplay');
+                            var ver = ParseReplay.getVersion(map);
+
+                            console.log("Map supported: " + replays[i].map + ", id=" + replays[i].id + ", ver= " + ver);
                             // Check if the map is being administrated by the bot
                             //
                             const Maps = require('../../db/maps');
-                            const foundMap = await Maps.getMap(mapName);
+                            const foundMap = await Maps.getMap(mapName); // Should fetch all maps in the beginning and then compare it rather than multiple awaits inside the loop
                             if (foundMap != null) {
-
                                 // Check for valid version
                                 // 
                                 if (foundMap.versions != undefined && foundMap.versions.includes(ver)) {
@@ -71,9 +73,13 @@ module.exports = class RefreshCommand {
                                     if (result == null) {
                                         const SubmitCommand = require("../submit");
                                         new SubmitCommand().run(client, msg, [id]); 
+                                    } else {
+                                        console.log("replay {" + id + "} has already been uploaded before.");
                                     }
                                 }
                             }
+                        } else {
+                            console.log("Map NOT supported: " + replays[i].map);
                         }
                     }    
                 } 

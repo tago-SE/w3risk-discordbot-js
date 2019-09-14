@@ -11,8 +11,8 @@ module.exports = class AdminCommand {
     constructor() {
         this.name = 'ranked',
         this.alias = ['r'],
-        this.usage = '!ranked [game id] [flag]'
-        this.disc = "Marks a played game as either ranked or unraked."
+        this.usage = this.name + " [id] [true/false]"
+        this.desc = "Marks a played game as either ranked or unraked."
         this.adminCommand = true;
     }
 

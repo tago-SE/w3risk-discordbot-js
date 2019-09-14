@@ -8,8 +8,8 @@ module.exports = class GamesCommand {
     constructor() {
         this.name = 'games',
         this.alias = ['g'],
-        this.usage = '!games [user]'
-        this.desc = 'Lists a users played games.'
+        this.usage = this.name + " [player]";
+        this.desc = "Lists most recent games of a player.";
     }
 
     run(client, msg, args) {

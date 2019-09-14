@@ -9,10 +9,11 @@ module.exports = class Player {
        this.deaths = 0;
        this.gold = 0;
        this.stayPercent = 0;
+       this.color = "";
     }
     
     toString() {
-        return "Player{name=" + this.name  + ", result=" + this.result + ", apm=" + this.apm + ", team=" + this.team + ", k=" + this.kills + ", d=" + this.deaths + ", g=" + this.gold +
+        return "Player{name=" + this.name  + ", result=" + this.result + ", apm=" + this.apm + +", color= " + this.color + ", team=" + this.team + ", k=" + this.kills + ", d=" + this.deaths + ", g=" + this.gold +
          ", stayPercent=" + this.stayPercent + "}";
     }
 }

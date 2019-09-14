@@ -9,4 +9,7 @@ module.exports = class MathUtils {
         }
         return n/m;
     }
+
+    
+
 }

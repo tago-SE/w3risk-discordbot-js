@@ -9,8 +9,8 @@ module.exports = class AdminCommand {
     constructor() {
         this.name = 'admin',
         this.alias = ['a'],
-        this.usage = '!admin [discord user]'
-        this.disc = "Grants or removes admin rights from a discord user.";
+        this.usage = this.name + " [user#discriminator]"
+        this.desc = "Grants or removes admin rights from a discord user. Restricted to superusers.";
         this.adminCommand = true;
     }
 

@@ -8,8 +8,8 @@ module.exports = class ScoreCommand {
     constructor() {
         this.name = 'score'
         this.alias = ['sc']
-        this.usage = '!score [player 1] [player 2]'
-        this.desc = 'Compares score between two players.'
+        this.usage = this.name + " [player 1] [player 2]"
+        this.desc = "Compares the score between two players."
     }
 
     run(client, msg, args) {

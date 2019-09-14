@@ -3,11 +3,11 @@ const MessageUtils = require("../../utils/messageutils");
 module.exports = class MapCommand {
 
     constructor() {
-        this.name = 'map',
-        this.alias = ['m'],
-        this.usage = '!map [name]'
-        this.disc = "Manages the maps contained inside the database";
-        this.adminCommand = true;
+        this.name = 'map'
+        this.alias = ['m']
+        this.usage = this.name + " [map name] [add/remove]"
+        this.desc = "Manages the maps contained in the database."
+        this.adminCommand = true
     }
 
     run(client, msg, args) {

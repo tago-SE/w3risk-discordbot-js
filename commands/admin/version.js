@@ -7,8 +7,8 @@ module.exports = class VersionCommand {
     constructor() {
         this.name = 'version',
         this.alias = ['v'],
-        this.usage = '!version [operator] (version/map name) (map name)'
-        this.disc = "Manages accepted versions associated to a map";
+        this.usage = this.name + " [add/remove/all] (version/map name) (map name)"
+        this.desc = "Manages supported versions associated to a map.";
         this.adminCommand = true;
     }
 

@@ -7,7 +7,7 @@ module.exports = class HelpCommand {
     constructor() {
         this.name = 'help',
         this.alias = ['h'],
-        this.usage = '!help'
+        this.usage = this.name;
         this.desc = "General information.";
     }
 
