@@ -5,11 +5,11 @@ const Admins = require("../../db/admins");
 module.exports = class VersionCommand {
 
     constructor() {
-        this.name = 'version',
-        this.alias = ['v'],
+        this.name = 'version'
+        this.alias = ['v']
         this.usage = this.name + " [add/remove/all] (version/map name) (map name)"
-        this.desc = "Manages supported versions associated to a map.";
-        this.adminCommand = true;
+        this.desc = "Manages supported versions associated to a map."
+        this.adminCommand = true
     }
 
     run(client, msg, args) {

@@ -7,11 +7,11 @@ const Admins = require('../../db/admins');
 module.exports = class AdminCommand {
 
     constructor() {
-        this.name = 'admin',
-        this.alias = ['a'],
+        this.name = 'admin'
+        this.alias = ['a']
         this.usage = this.name + " [user#discriminator]"
-        this.desc = "Grants or removes admin rights from a discord user. Restricted to superusers.";
-        this.adminCommand = true;
+        this.desc = "Grants or removes admin rights from a discord user. Restricted to superusers."
+        this.adminCommand = true
     }
 
     run(client, msg, args) {

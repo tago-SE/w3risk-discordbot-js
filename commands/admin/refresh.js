@@ -9,7 +9,7 @@ module.exports = class RefreshCommand {
         this.name = 'refresh'
         this.alias = ['ref']
         this.usage = this.name + " (ffa/solo/team/replays)"
-        this.desc = "Refreshes the scoreboard or pulls the last uploaded replays from wc3stats.com"
+        this.desc = "Refreshes the scoreboard or pulls the last uploaded replays from wc3stats.com."
         this.adminCommand = true;
     }
 

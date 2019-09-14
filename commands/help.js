@@ -5,10 +5,10 @@ const ConfigUtils = require('../utils/configutils');
 module.exports = class HelpCommand {
 
     constructor() {
-        this.name = 'help',
-        this.alias = ['h'],
-        this.usage = this.name;
-        this.desc = "General information.";
+        this.name = 'help'
+        this.alias = ['h']
+        this.usage = this.name
+        this.desc = "General information."
     }
 
     run(client, msg, args) {
