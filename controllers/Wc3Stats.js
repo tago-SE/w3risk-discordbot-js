@@ -21,7 +21,6 @@ module.exports = class Wc3Stats {
                 resolve(json);
             })
             .catch(function (err) {
-                console.log(err);
                 reject(err);
             }); 
         });

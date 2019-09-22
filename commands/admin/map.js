@@ -5,7 +5,7 @@ module.exports = class MapCommand {
     constructor() {
         this.name = 'map'
         this.alias = ['m']
-        this.usage = this.name + " [map name] [add/remove]"
+        this.usage = this.name + " [add/remove] [map name]"
         this.desc = "Manages the maps contained in the database."
         this.adminCommand = true
     }

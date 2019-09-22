@@ -86,6 +86,7 @@ module.exports = class SubmitCommand {
             msg.channel.send(MessageUtils.error("Invalid replay id {" + args[0] + "}"));
             return;
         }
+
         (async () => {            
 
             const Wc3stats = require("../controllers/Wc3Stats");
@@ -94,6 +95,7 @@ module.exports = class SubmitCommand {
                 msg.channel.send(MessageUtils.error("Failed to fetch replay {" + id + "} from end point."));
                 return;
             }
+
             console.log(jsonBody);
 
             const Replays = require("../db/replays");
@@ -101,39 +103,38 @@ module.exports = class SubmitCommand {
 
             // Attempt to parse replay
             //
-            var replay = ParseReplay.parseRisk(jsonBody);
+            const replay = ParseReplay.parseRisk(jsonBody);
+        
+            const Maps = require('../db/maps');
+            const foundMap = await Maps.getMap(replay.map);
 
-            if (replay.error != 0) {
-                const Maps = require('../db/maps');
-                const foundMap = await Maps.getMap(replay.map);
-                if (foundMap != null) {
-                    if (foundMap.versions != undefined && foundMap.versions.includes(replay.version)) {
-                        msg.channel.send(MessageUtils.error("Failed to parse replay {" + id + "}"));
-                        Replays.setReplayFailureFlag(id, replay.error);
-                    } 
-                    else {
-                        msg.channel.send(MessageUtils.error("Does not support version {" + replay.version + "}"));
+            if (foundMap != null) {
+                if (foundMap.versions != undefined && foundMap.versions.includes(replay.version)) {
+
+                    if (replay.error != 0) {
+                        msg.channel.send(MessageUtils.error("Failed to parse Custom Data " + " (#" + replay.id + ")"));
+                        return; 
                     }
-                } 
-                else {
-                    msg.channel.send(MessageUtils.error("Does not support map {" + replay.map + "}"));
-                }
-                return;
-            }
-            try {
-                var result = await Replays.getReplayByGameId(replay.id);
-                if (result == null) {
-                    Replays.insert(replay);
-                    SubmitCommand.displayResult(msg, replay);
-                    if (replay.rankedMatch) {
-                        await Users.increaseStats(replay, 1);
-                        Scoreboard.updateScoreboard(client, replay.gameType);
+                    try {
+                        var result = await Replays.getReplayByGameId(replay.id);
+                        if (result == null) {
+                            Replays.insert(replay);
+                            SubmitCommand.displayResult(msg, replay);
+                            if (replay.rankedMatch) {
+                                await Users.increaseStats(replay, 1);
+                                Scoreboard.updateScoreboard(client, replay.gameType);
+                            }
+                        } else {
+                            msg.channel.send(MessageUtils.error("Replay already submitted " + " (#" + replay.id + ")"));
+                        }
+                    } catch (err) {
+                        console.log(err);
                     }
                 } else {
-                    msg.channel.send(MessageUtils.error("Replay already submitted {" + replay.id + "}"));
+                    msg.channel.send(MessageUtils.error("Does not support version " + replay.version + " (#" + replay.id + ")"));
                 }
-            } catch (err) {
-                console.log(err);
+            } else {
+                msg.channel.send(MessageUtils.error("Does not support map " + replay.map + " (#" + replay.id + ")"));
             }
         })();
     }

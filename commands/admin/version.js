@@ -39,8 +39,10 @@ module.exports = class VersionCommand {
                         msg.channel.send(MessageUtils.error("No map matching {" + map.toLowerCase() + "}"));
                     } 
                     else {
-                        if (foundMap.versions != undefined && foundMap.versions.length > 0) 
+                        if (foundMap.versions != undefined && foundMap.versions.length > 0) {
+                            foundMap.versions.sort();
                             msg.channel.send("Versions: " + foundMap.versions.join(', ') + ".");
+                        }
                         else 
                             msg.channel.send("Versions: none");
                     }

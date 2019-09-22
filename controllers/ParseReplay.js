@@ -11,28 +11,35 @@ module.exports = class ParseReplay {
         var prevWasNumber = false;
         for (var i = 0; i < mapName.length; i++) {
             let c = mapName.charAt(i);
+
             if (StringUtils.charIsNumber(c)) {
                 if (startIndex == -1) {
                     startIndex = i;
-                }
-                endIndex = i + 1;
+                    
+                };
+                endIndex = i;
                 prevWasNumber = true;
                 continue;
             } 
             else if (StringUtils.charIsLetter(c) && prevWasNumber && StringUtils.isLowerCase(c)) {
-                endIndex = i + 1;
+                prevWasNumber = false;
+                endIndex = i;
+                break;
             }
             else if (c == '.' && dotCounter == 0 && prevWasNumber) {
                 dotCounter++;
-                endIndex = i + 1;
+                endIndex = i;
+                prevWasNumber = false;
             } 
-            prevWasNumber = false;
+            else if (startIndex != -1) {
+                break;
+            }
         }
-        return mapName.substring(startIndex, endIndex);
+        return mapName.substring(startIndex, endIndex + 1);
     }
 
     static parseRisk(bodyObj) {
-        var replay = new Replay(); 
+        var replay = new Replay();
         try {
             replay.id = bodyObj.id;
             replay.map = bodyObj.map;
@@ -58,22 +65,24 @@ module.exports = class ParseReplay {
                 const varObj = playerObj.variables;
 
                 if (varObj != null) {
-
-                     // Settings stored inside the first player
-                    if (i == 0)  {
-                        var args = varObj.other.split(' ');
-                        replay.rankedMatch = (args[0] === "1");
-                        replay.fog = args[1];
-                        replay.turns = args[2];
-                        replay.version = args[3];
+                    try {
+                        // Settings stored inside the first player
+                        if (i == 0)  {
+                            var args = varObj.other.split(' ');
+                            replay.rankedMatch = (args[0] === "1");
+                            replay.fog = args[1];
+                            replay.turns = args[2];
+                        }
+                        player.result = varObj.result;
+                        player.kills = varObj.kills;
+                        player.deaths = varObj.deaths;
+                        player.gold = varObj.gold;
+                        player.team = varObj.team;
+                    } catch (err) {
+                        console.log("Failed to parse Custom Data of " + player.name);
+                        replay.error = 3; 
                     }
-
-                    player.result = varObj.result;
-                    player.kills = varObj.kills;
-                    player.deaths = varObj.deaths;
-                    player.gold = varObj.gold;
-                    player.team = varObj.team;
-
+                
                     // Add none observing players to the list
                     if (player.result != null && player.result !== "obs") {
                         replay.players.push(player);

@@ -50,9 +50,12 @@ module.exports = class RefreshCommand {
                         if (replays[i].map == "Risk Reforged") {    // Static filter, needs fix
                             var id = replays[i].id;
                             var replay = await Wc3Stats.fetchReplayById(id);
-                            var map = replay.data.game.map.substring(0, 19);
+
+                            // THIS SHOULD BE CHANGED!!!
+                            var map = replay.data.game.map.substring(0, 19); 
                             var mapName = replay.map;
 
+                            
                             const ParseReplay = require('../../controllers/ParseReplay');
                             var ver = ParseReplay.getVersion(map);
 
@@ -62,6 +65,9 @@ module.exports = class RefreshCommand {
                             const Maps = require('../../db/maps');
                             const foundMap = await Maps.getMap(mapName); // Should fetch all maps in the beginning and then compare it rather than multiple awaits inside the loop
                             if (foundMap != null) {
+                                
+                                console.log("foundMap: " + foundMap);
+
                                 // Check for valid version
                                 // 
                                 if (foundMap.versions != undefined && foundMap.versions.includes(ver)) {

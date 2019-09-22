@@ -3,7 +3,7 @@ class Replay {
     constructor() {
         this.id = null;
         this.map = null;
-        this.version = null;
+        this.version = 0;
         this.length = null;
         this.uploader = null;
         this.turns = null;

@@ -8,7 +8,7 @@ module.exports = class StatsCommand {
     constructor() {
         this.name = 'stats'
         this.alias = ['st']
-        this.usage = this.name + " [player]"
+        this.usage = this.name + " (player)"
         this.desc = 'Reveals player stats.'
     }
 
@@ -23,22 +23,35 @@ module.exports = class StatsCommand {
 
     run(client, msg, args) {
 
+        /*
         if (args.length < 1) {
             msg.channel.send(MessageUtils.error("No username specified."));
             return;
         }
-        
-        const name = args[0].toLowerCase();
+        */
         const ConfigUtils = require('../utils/configutils');
         const localConfig = ConfigUtils.findConfigMatchingMessage(msg);
         const kd_decimal = localConfig.scoreboard.kd_decimals;
         const wl_decimal = 1;
-        
+
+
+        var name =  msg.member.nickname;
+        if (name == null) {
+            name = msg.author.username;
+        }
         (async () => {
             try {
+
+                if (args.length > 0) {
+                    name = args[0];
+                }
+                name = name.toLowerCase();
                 const user = await Users.getUserByName(name)
                 if (user == null) {
-                    msg.channel.send(MessageUtils.error("No player by the name {" + name + "} was found."));
+                    if (args < 1)
+                        msg.channel.send(MessageUtils.error("No player by the name {" + name + "} was found, try specifying a player name or changing your channel nickname."));
+                    else 
+                        msg.channel.send(MessageUtils.error("No player by the name {" + name + "} was found."));
                     return;
                 }
 

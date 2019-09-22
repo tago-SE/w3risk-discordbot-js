@@ -47,9 +47,6 @@ client.on('guildMemberAdd', member => {
   
 client.on('message', msg => {
 
-    // TEST
-    // Name has changed
-    // ReplayWatcher.fetchLatestReplays();
 
     // Ignore messages sent by bots
     if (msg.author.bot)  return;
@@ -73,11 +70,13 @@ client.on('message', msg => {
 
             Wc3Stats.postReplayAttachment(attached)
             .then(json => {
-                msg.channel.send("Replay uploaded: https://wc3stats.com/games/" + json.body.id);
+                //msg.channel.send("Uploading replay...");
+                //msg.channel.send("Replay uploaded: https://wc3stats.com/games/" + json.body.id);
                 const SubmitCommand = require('./commands/submit');
                 new SubmitCommand().run(client, msg, [json.body.id]); 
             })
             .catch(err => {
+                msg.channel.send(MessageUtils.error("Upload to wc3stats.com failed"));
                 console.log(err);
             });
         }
