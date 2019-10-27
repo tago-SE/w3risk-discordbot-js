@@ -1,7 +1,10 @@
 - Fix so that it wont crash if text is written inside the scoreboard channel
 - Add a command to resetplayer stats for admins
-- Hide admin commands by deleting them when typed?
 - Add SS kill/death counter?
-- Add encryption/decryption of "other"?
 
-- Finish work on the 2v2 arranged team league 
+--- Order of importance
+
+- Fix so that the user KD is based on game average
+- Show amount of rounds played in result
+- Display K/D in the result kills/deaths (k/d)
+- Finish work on the 2v2 arranged team league - Add a reset stats command 
