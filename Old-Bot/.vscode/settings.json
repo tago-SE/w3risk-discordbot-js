@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/ce5bb5a8-de03-4b79-b024-eaeb8f8cb676/resourceGroups/w3-discord-bot/providers/Microsoft.Web/sites/w3-discord-bot-1",
+    "appService.deploySubpath": ""
+}

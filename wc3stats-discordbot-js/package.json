@@ -1,0 +1,18 @@
+{
+  "name": "wc3stats-discordbot",
+  "version": "1.0.0",
+  "description": "npm init",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node main.js"
+  },
+  "keywords": [
+    "discordbot"
+  ],
+  "author": "Tiago Redaelli",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^11.5.1"
+  }
+}
