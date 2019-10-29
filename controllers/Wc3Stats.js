@@ -27,7 +27,7 @@ module.exports = class Wc3Stats {
     }
 
     /**
-     * Fetches replay from wc3stats.com/games/id returning a single replay object. 
+     * Fetches replay from wc3stats.com/games/id returning a single replay json. 
      * 
      * @param {integer} id 
      */
