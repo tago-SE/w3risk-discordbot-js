@@ -18,3 +18,7 @@ After this you should run
 
     npm install
     npm start 
+    
+# Screenshots 
+
+https://github.com/tago-SE/w3risk-discordbot-js/blob/master/screenshots/scoreboard.png
