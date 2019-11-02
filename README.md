@@ -21,4 +21,7 @@ After this you should run
     
 # Screenshots 
 
-https://github.com/tago-SE/w3risk-discordbot-js/blob/master/screenshots/scoreboard.png
+![Scoreboard](https://github.com/tago-SE/w3risk-discordbot-js/blob/master/screenshots/scoreboard.png)
+![Upload](https://github.com/tago-SE/w3risk-discordbot-js/blob/master/screenshots/game-result-upload.png)
+
+https://github.com/tago-SE/w3risk-discordbot-js/tree/master/screenshots
