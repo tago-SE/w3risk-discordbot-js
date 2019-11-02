@@ -14,7 +14,7 @@ module.exports = class Scoreboard {
 
     static updateChannel(client, title, names, col_2, col_3) {
         try {
-            console.log("Updating scoreboard... names.size = " + names.length);
+            console.log("Updating scoreboa§rd... names.size = " + names.length);
             console.log("names: " + names);
             let embed = new Discord.RichEmbed()
             if (names.length > 0) {
@@ -72,7 +72,7 @@ module.exports = class Scoreboard {
                 wl += users[i].ffaWins + " - " + users[i].ffaLosses + "\n";
                 kd += MessageUtils.formatRatio(users[i].ffaKills, users[i].ffaDeaths, kd_decimals) + "\n";
             }
-            Scoreboard.updateChannel(client, config.scoreboard.ffaTitle, names, wl, kd);
+            Scoreboard.updateChannel(client, config.scoreboard.ffaTitle, names, wl, wl);
         })();
     }
 
